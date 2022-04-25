@@ -64,6 +64,8 @@
 
 #else
 
+/* syscall numbers for riscv */
+#define SYS_bpf             280
 #define SYS_exit            93
 #define SYS_fork            -1
 #define SYS_wait            260
