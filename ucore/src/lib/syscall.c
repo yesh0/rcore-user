@@ -6,6 +6,7 @@
 #include <dirent.h>
 
 #include <bpf.h>
+#include <signal.h>
 
 #define MAX_ARGS            5
 
@@ -205,4 +206,9 @@ sys_mmap(void *addr, size_t len, int prot, int flags, int fd, size_t offset) {
 int
 sys_bpf(int cmd, union bpf_attr *attr, size_t size) {
     return syscall(SYS_bpf, cmd, attr, size);
+}
+
+int
+sys_sigaction(int signum, const struct sigaction *act, struct sigaction *oldact) {
+    return syscall(SYS_sigaction, signum, act, oldact, 8);
 }

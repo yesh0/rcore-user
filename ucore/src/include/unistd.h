@@ -30,6 +30,9 @@
 #define SYS_getcwd          79
 #define SYS_getdirentry64   217
 #define SYS_dup3            292
+#define SYS_sigaction       13
+#define SYS_sigprocmask     14
+#define SYS_sigreturn       15
 /* ONLY FOR LAB6 */
 #define SYS_set_priority    141
 
@@ -90,6 +93,9 @@
 #define SYS_getcwd          17
 #define SYS_getdirentry64   61
 #define SYS_dup3            24
+#define SYS_sigaction       134
+#define SYS_sigprocmask     135
+#define SYS_sigreturn       139
 /* ONLY FOR LAB6 */
 #define SYS_set_priority    140
 
