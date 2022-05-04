@@ -43,6 +43,8 @@ enum bpf_cmd {
 	BPF_ITER_CREATE,
 	BPF_LINK_DETACH,
 	BPF_PROG_BIND_MAP,
+    // custom commands
+    BPF_PROG_LOAD_EX = 1000,
 };
 
 enum bpf_map_type {
@@ -79,6 +81,11 @@ enum bpf_map_type {
 	BPF_MAP_TYPE_BLOOM_FILTER,
 };
 
+struct bpf_map_fd_entry {
+	const char *name;
+	uint32_t fd;
+};
+
 union bpf_attr {
     struct {
         uint32_t map_type;
@@ -97,6 +104,20 @@ union bpf_attr {
         };
         uint64_t flags;
     };
+
+    // for custom BPF_PROG_LOAD_EX
+    struct {
+        uint64_t prog;
+        uint32_t prog_size;
+		uint32_t map_array_len;
+		struct bpf_map_fd_entry *map_array;
+    };
+
+	// for custom BPF_PROG_ATTACH
+	struct {
+		const char *target;
+		uint32_t prog_fd;
+	};
 };
 
 int sys_bpf(int cmd, union bpf_attr *attr, size_t size);
@@ -106,5 +127,8 @@ int bpf_lookup_elem(int fd, const void *key, void *value);
 int bpf_update_elem(int fd, const void *key, const void *value, uint64_t flags);
 int bpf_delete_elem(int fd, const void *key);
 int bpf_get_next_key(int fd, const void *key, void *next_key);
+
+int bpf_prog_load_ex(void *prog, uint32_t prog_size, struct bpf_map_fd_entry *map_array, uint32_t map_array_len);
+int bpf_prog_attach(const char *target, int fd);
 
 #endif // __LIBS_BPF_H__

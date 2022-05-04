@@ -36,9 +36,22 @@ void test_bpf_map() {
     cprintf("bpf map tests OK\n");
 }
 
+int create_map() {
+    int fd = bpf_create_map(BPF_MAP_TYPE_ARRAY, sizeof(int), sizeof(int), MAX_ENTRIES);
+    assert(fd > 0);
+
+    int key = 0;
+    int value = 12345;
+    assert(bpf_update_elem(fd, &key, &value, 0) == 0);
+
+    return fd;
+}
+
 void test_bpf_prog() {
+    int map_fd = create_map();
+
     struct stat stat;
-    int fd = open("./bpf_test", O_RDONLY);
+    int fd = open("./bpf/map.o", O_RDONLY);
     if (fd < 0) {
         cprintf("open file failed!\n");
         return;
@@ -52,7 +65,7 @@ void test_bpf_prog() {
     // only use it as a way to allocate memory
     long ret = sys_mmap(NULL, prog_size, 3, 32, -1, 0);
     // cprintf("mmap returns %p\n", p);
-    if (!ret || ret < 0) {
+    if (ret <= 0) {
         cprintf("mmap failed! ret = %ld\n", ret);
         close(fd);
         return;
@@ -61,6 +74,16 @@ void test_bpf_prog() {
     unsigned *p = (unsigned *) ret;
     read(fd, p, prog_size);
     cprintf("ELF content: %x %x %x %x\n", p[0], p[1], p[2], p[3]);
+
+    struct bpf_map_fd_entry map_array[] = {
+        { .name = "map_fd", .fd = map_fd },
+    };
+    int bpf_fd = bpf_prog_load_ex(p, prog_size, map_array, 1);
+    cprintf("load ex: %x\n", bpf_fd);
+
+    // const char *target = "kprobe:_RNvMNtNtCs6EJUG5qC0e6_5rcore7syscall4procNtB4_7Syscall8sys_fork";
+    const char *target = "kprobe:<rcore::syscall::Syscall>::sys_fork";
+    cprintf("attach: %d\n", bpf_prog_attach(target, bpf_fd));
 
     close(fd);
 }

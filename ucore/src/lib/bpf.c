@@ -50,3 +50,23 @@ bpf_get_next_key(int fd, const void *key, void *next_key) {
     };
     return sys_bpf(BPF_MAP_GET_NEXT_KEY, &attr, sizeof(attr));
 }
+
+int
+bpf_prog_load_ex(void *prog, uint32_t prog_size, struct bpf_map_fd_entry *map_array, uint32_t map_array_len) {
+    union bpf_attr attr = {
+        .prog = (uint64_t) prog,
+        .prog_size = prog_size,
+        .map_array_len = map_array_len,
+        .map_array = map_array,
+    };
+    return sys_bpf(BPF_PROG_LOAD_EX, &attr, sizeof(attr));
+}
+
+int
+bpf_prog_attach(const char *target, int prog_fd) {
+    union bpf_attr attr = {
+        .target = target,
+        .prog_fd = prog_fd,
+    };
+    return sys_bpf(BPF_PROG_ATTACH, &attr, sizeof(attr));
+}
