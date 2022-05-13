@@ -36,6 +36,28 @@ void test_bpf_map() {
     cprintf("bpf map tests OK\n");
 }
 
+void test_bpf_hashmap() {
+    uint64_t key, value, next_key;
+    int fd = bpf_create_map(BPF_MAP_TYPE_HASH, sizeof(key), sizeof(value), MAX_ENTRIES);
+    assert(fd > 0);
+
+    for (int i = 1; i <= 10; ++i) {
+        key = i * 0x2348fe12 + (86514 ^ i);
+        value = i;
+        cprintf("kv: (%lx, %ld)\n", key, value);
+        assert(bpf_update_elem(fd, &key, &value, 0) == 0);
+    }
+
+    key = 0;
+    while (bpf_get_next_key(fd, &key, &next_key) == 0) {
+        key = next_key;
+        assert(bpf_lookup_elem(fd, &key, &value) == 0);
+        cprintf("got: (%lx, %ld)\n", key, value);
+    }
+
+    cprintf("bpf hashmap tests OK\n");
+}
+
 int create_map() {
     int fd = bpf_create_map(BPF_MAP_TYPE_ARRAY, sizeof(int), sizeof(int), MAX_ENTRIES);
     assert(fd > 0);
@@ -63,7 +85,7 @@ void test_bpf_prog() {
 
     // it seems like mmap with file mapping is not working
     // only use it as a way to allocate memory
-    long ret = sys_mmap(NULL, prog_size, 3, 32, -1, 0);
+    long ret = (long) sys_mmap(NULL, prog_size, 3, 32, -1, 0);
     // cprintf("mmap returns %p\n", p);
     if (ret <= 0) {
         cprintf("mmap failed! ret = %ld\n", ret);
@@ -94,6 +116,7 @@ void interrupt_handler(int sig) {
 }
 
 int main() {
+    test_bpf_hashmap();
     struct sigaction act = {
         .sa_handler = interrupt_handler,
         .sa_flags = 0,
@@ -102,6 +125,6 @@ int main() {
     };
     sys_sigaction(SIGINT, &act, NULL);
     test_bpf_prog();
-    while (1) ;
+    // while (1) ;
     return 0;
 }

@@ -4,7 +4,7 @@
 int sys_exit(int error_code);
 int sys_fork(void);
 int sys_wait(int pid, int *store);
-int sys_exec(const char *name, int argc, const char **argv);
+int sys_execve(const char *name, const char **argv, const char **envp);
 int sys_yield(void);
 int sys_kill(int pid);
 int sys_getpid(void);
@@ -27,7 +27,7 @@ int sys_getdirentry(int fd, struct dirent *dirent);
 int sys_dup(int fd1, int fd2);
 void sys_set_priority(uint32_t priority); //only for lab6
 void *sys_mmap(void *addr, size_t len, int prot, int flags, int fd, size_t offset);
-
+int sys_munmap(void *addr, size_t len);
 
 #endif /* !__USER_LIBS_SYSCALL_H__ */
 

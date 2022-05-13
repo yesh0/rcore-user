@@ -143,8 +143,8 @@ sys_gettime(void) {
 }
 
 int
-sys_exec(const char *name, int argc, const char **argv) {
-    return syscall(SYS_exec, name, argc, argv);
+sys_execve(const char *name, const char **argv, const char **envp) {
+    return syscall(SYS_exec, name, argv, envp);
 }
 
 int
@@ -201,6 +201,11 @@ sys_dup(int fd1, int fd2) {
 void *
 sys_mmap(void *addr, size_t len, int prot, int flags, int fd, size_t offset) {
     return syscall(SYS_mmap, addr, len, prot, flags, fd, offset);
+}
+
+int
+sys_munmap(void *addr, size_t len) {
+    return syscall(SYS_munmap, addr, len);
 }
 
 int
