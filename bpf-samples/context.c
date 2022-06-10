@@ -22,17 +22,18 @@ int bpf_prog(struct kprobe_bpf_ctx *ctx) {
   }
 
   // recover return result from a0
-  char *ret_addr = (char *)ctx->tf.general.a0;
-  char enum_flag = *ret_addr;
-  if (enum_flag == 0) {
-    size_t retvalue = *(size_t *)(ret_addr + 8);
-    bpf_trace_printk("ret = Ok({})\n", retvalue, 0, 0);
-  } else if (enum_flag == 1) {
-    size_t syserror_flag = *(size_t *)(ret_addr + 8);
-    bpf_trace_printk("ret = Err({})\n", syserror_flag, 0, 0);
-  } else {
-    bpf_trace_printk("failed to fetch SysResult return value\n", 0, 0, 0);
-  }
+  bpf_trace_printk("a0 = {}\n", ctx->tf.general.a0, 0, 0);
+  // char *ret_addr = (char *)ctx->tf.general.a0;
+  // char enum_flag = *ret_addr;
+  // if (enum_flag == 0) {
+  //   size_t retvalue = *(size_t *)(ret_addr + 8);
+  //   bpf_trace_printk("ret = Ok({})\n", retvalue, 0, 0);
+  // } else if (enum_flag == 1) {
+  //   size_t syserror_flag = *(size_t *)(ret_addr + 8);
+  //   bpf_trace_printk("ret = Err({})\n", syserror_flag, 0, 0);
+  // } else {
+  //   bpf_trace_printk("failed to fetch SysResult return value\n", 0, 0, 0);
+  // }
 
   return 0;
 }
