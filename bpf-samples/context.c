@@ -4,11 +4,11 @@
 int bpf_prog(struct kprobe_bpf_ctx *ctx) {
   // report tracepoint type
   if (ctx->ptype == 0)
-    bpf_trace_printk("kprobe\n", 0, 0, 0);
+    bpf_trace_printk("kprobe", 0, 0, 0);
   else if (ctx->ptype == 1)
-    bpf_trace_printk("kretprobe@entry\n", 0, 0, 0);
+    bpf_trace_printk("kretprobe@entry", 0, 0, 0);
   else
-    bpf_trace_printk("kretprobe@exit\n", 0, 0, 0);
+    bpf_trace_printk("kretprobe@exit", 0, 0, 0);
 
   // report tracepoint address
   bpf_trace_printk("\taddr = {}\n", ctx->paddr, 0, 0);
