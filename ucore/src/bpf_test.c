@@ -73,7 +73,7 @@ void test_bpf_prog() {
     int map_fd = create_map();
 
     struct stat stat;
-    int fd = open("./bpf/map.o", O_RDONLY);
+    int fd = open("./map.o", O_RDONLY);
     if (fd < 0) {
         cprintf("open file failed!\n");
         return;
