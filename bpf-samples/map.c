@@ -10,7 +10,7 @@ int foo()
     new_value = old_value + 1;
 
     bpf_map_update_elem(map_fd, &key, &new_value, 0);
-    bpf_trace_printk("value = {}", old_value, 0, 0);
+    bpf_trace_printk("value = {}\n", old_value, 0, 0);
 
     char buf[32];
     int len = bpf_get_current_comm(buf, sizeof(buf));
@@ -19,5 +19,6 @@ int foo()
     } else {
         bpf_trace_print_str(buf, len);
     }
+    bpf_trace_puts("\n");
     return 1;
 }

@@ -15,6 +15,11 @@
 #define WHITESPACE                      " \t\r\n"
 #define SYMBOLS                         ""
 
+#define BEL 0x07
+#define BS 0x08
+#define ESC 0x1b
+#define DEL 0x7f
+
 static inline void putc(char c) {
     sys_write(1, &c, 1);
 }
@@ -86,17 +91,24 @@ char *readline(const char *prompt) {
         char c = getchar();
         if (c == 3) {
             return NULL;
-        } else if (c >= ' ' && i < BUFSIZE - 1) {
-            putc(c);
-            buffer[i ++] = c;
-        } else if (c == '\b' && i > 0) {
-            putc(c);
-            putc(' ');
-            i --;
+        } else if (c == BS || c == DEL) {
+            if (i > 0) {
+                putc(BS);
+                putc(' ');
+                putc(ESC);
+                putc('[');
+                putc('D');
+                --i;
+            } else {
+                putc(BEL);
+            }
         } else if (c == '\n' || c == '\r') {
             putc('\n');
             buffer[i] = '\0';
             break;
+        } else if (c >= ' ' && i < BUFSIZE - 1) {
+            putc(c);
+            buffer[i ++] = c;
         }
     }
     return buffer;
