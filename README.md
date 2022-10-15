@@ -28,6 +28,8 @@ Now it has 6 parts:
 
 ## Build
 
+> Note that if you want to test eBPF programs, you might want to run `./b.sh` instead of `make sfsimg`.
+
 Install prebuilt musl toolchain from [musl.cc](https://musl.cc).
 
 See Travis script 'install' section for details.
